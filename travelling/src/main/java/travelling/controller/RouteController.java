@@ -18,6 +18,6 @@ public class RouteController {
 
     @GetMapping
     public List<RouteEntity> getAllBooks() {
-        return null;
+        return routeService.getAllRouts();
     }
 }
