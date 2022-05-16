@@ -7,8 +7,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import travelling.entity.RouteEntity;
 import travelling.repository.RouteRepository;
 import travelling.repository.UserRepository;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -33,8 +36,18 @@ class RouteServiceImplTest {
 
     @Test
     void testGetBooks() {
-        Assertions.assertEquals(0, routeRepository.findAll());
+        Assertions.assertEquals(0, ((List<RouteEntity>)routeRepository.findAll()).size());
 
         Assertions.assertEquals(0, service.getAllRouts().size());
     }
+
+    @Test
+    void testGetAllBooks() {
+        routeRepository.save(RouteEntity.builder().id(1).name("Munich-Berlin").spots(10).build());
+        Assertions.assertEquals(1, ((List<RouteEntity>)routeRepository.findAll()).size());
+
+        Assertions.assertEquals(1, service.getAllRouts().size());
+        Assertions.assertEquals("Munich-Berlin", ((List<RouteEntity>)routeRepository.findAll()).get(0).getName());
+    }
+
 }
