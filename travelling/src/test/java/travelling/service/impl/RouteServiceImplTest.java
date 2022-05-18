@@ -129,4 +129,29 @@ class RouteServiceImplTest {
         Optional<UserRouteEntity> userRouteEntity = userRouteRepository.findById(UserRouteId.builder().routeId(1).userId(1).build());
         Assertions.assertFalse(userRouteEntity.isPresent());
     }
+
+    @Test
+    void testWhenUserBooksTwoTimes() {
+        routeRepository.save(RouteEntity.builder().id(1).name("Munich-Berlin").spots(10).build());
+        userRepository.save(UserEntity.builder().id(1).name("John").build());
+        service.bookSpots(1, 1, 1);
+
+        Optional<UserRouteEntity> userRouteEntity = userRouteRepository.findById(UserRouteId.builder().routeId(1).userId(1).build());
+
+        Assertions.assertTrue(userRouteEntity.isPresent());
+        Assertions.assertEquals(1, userRouteEntity.get().getSpotCount());
+        Assertions.assertEquals(9, userRouteEntity.get().getRoute().getSpots());
+        Assertions.assertEquals("Munich-Berlin", userRouteEntity.get().getRoute().getName());
+        Assertions.assertEquals("John", userRouteEntity.get().getUser().getName());
+
+        service.bookSpots(1, 1, 2);
+
+        userRouteEntity = userRouteRepository.findById(UserRouteId.builder().routeId(1).userId(1).build());
+
+        Assertions.assertTrue(userRouteEntity.isPresent());
+        Assertions.assertEquals(3, userRouteEntity.get().getSpotCount());
+        Assertions.assertEquals(7, userRouteEntity.get().getRoute().getSpots());
+        Assertions.assertEquals("Munich-Berlin", userRouteEntity.get().getRoute().getName());
+        Assertions.assertEquals("John", userRouteEntity.get().getUser().getName());
+    }
 }
