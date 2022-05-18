@@ -12,6 +12,7 @@ import travelling.entity.UserEntity;
 import travelling.entity.UserRouteEntity;
 import travelling.entity.UserRouteId;
 import travelling.exception.NotEnoughSpotsException;
+import travelling.exception.RouteNotExistsException;
 import travelling.exception.SpotsSoldOutException;
 import travelling.exception.UserNotExistsException;
 import travelling.repository.RouteRepository;
@@ -116,5 +117,16 @@ class RouteServiceImplTest {
         Assertions.assertFalse(userRouteEntity.isPresent());
     }
 
+    @Test
+    void testThrowExceptionWhenRouteNotExists() {
+        userRepository.save(UserEntity.builder().id(1).name("John").build());
+        RouteNotExistsException exception = Assertions.assertThrows(RouteNotExistsException.class, () -> {
+            service.bookSpots(1, 1, 2);
+        });
 
+        Assertions.assertEquals("Route not exists", exception.getMessage());
+
+        Optional<UserRouteEntity> userRouteEntity = userRouteRepository.findById(UserRouteId.builder().routeId(1).userId(1).build());
+        Assertions.assertFalse(userRouteEntity.isPresent());
+    }
 }
