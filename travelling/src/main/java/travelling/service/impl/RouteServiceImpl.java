@@ -8,6 +8,7 @@ import travelling.entity.UserEntity;
 import travelling.entity.UserRouteEntity;
 import travelling.entity.UserRouteId;
 import travelling.exception.NotEnoughSpotsException;
+import travelling.exception.RouteNotExistsException;
 import travelling.exception.SpotsSoldOutException;
 import travelling.exception.UserNotExistsException;
 import travelling.repository.RouteRepository;
@@ -17,7 +18,6 @@ import travelling.service.RouteService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class RouteServiceImpl implements RouteService {
@@ -42,19 +42,18 @@ public class RouteServiceImpl implements RouteService {
     @Transactional
     public void bookSpots(Integer userId, Integer routId, int spotNumber) {
         UserEntity userEntity = userRepository.findById(userId).orElseThrow(() -> new UserNotExistsException("User not exists"));
-        Optional<RouteEntity> routeEntity = routeRepository.findById(routId);
+        RouteEntity routeEntity = routeRepository.findById(routId).orElseThrow(() -> new RouteNotExistsException("Route not exists"));
 
-        RouteEntity route = routeEntity.get();
-        if (route.getSpots() == 0) {
+        if (routeEntity.getSpots() == 0) {
             throw new SpotsSoldOutException("All spots are sold out");
         }
-        if (route.getSpots() < spotNumber) {
+        if (routeEntity.getSpots() < spotNumber) {
             throw new NotEnoughSpotsException("Not enough spots");
         }
-        route.setSpots(route.getSpots() - spotNumber);
+        routeEntity.setSpots(routeEntity.getSpots() - spotNumber);
 
         userRouteRepository.save(UserRouteEntity.builder()
                 .id(UserRouteId.builder().userId(userId).routeId(routId).build())
-                .route(route).user(userEntity).spotCount(spotNumber).build());
+                .route(routeEntity).user(userEntity).spotCount(spotNumber).build());
     }
 }
