@@ -8,5 +8,5 @@ public interface RouteService {
 
     List<RouteEntity> getAllRouts();
 
-    void bookSpots(Integer userId, Integer routId, int spotNumber);
+    void bookSpots(Integer userId, Integer routId, Integer spotNumber);
 }

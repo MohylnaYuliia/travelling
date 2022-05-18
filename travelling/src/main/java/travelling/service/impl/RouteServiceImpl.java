@@ -42,7 +42,7 @@ public class RouteServiceImpl implements RouteService {
 
     @Override
     @Transactional
-    public void bookSpots(Integer userId, Integer routId, int spotNumber) {
+    public void bookSpots(Integer userId, Integer routId, Integer spotNumber) {
         UserEntity userEntity = userRepository.findById(userId).orElseThrow(() -> new UserNotExistsException("User not exists"));
         RouteEntity routeEntity = routeRepository.findById(routId).orElseThrow(() -> new RouteNotExistsException("Route not exists"));
 

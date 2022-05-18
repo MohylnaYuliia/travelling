@@ -20,7 +20,7 @@ public class RouteController {
     }
 
     @PostMapping("/{routeId}/users/{userId}/spots/{spotsNumber}")
-    public void returnBook(@PathVariable Integer routeId, @PathVariable Integer userId, Integer spotsNumber) {
-
+    public void bookRoute(@PathVariable Integer routeId, @PathVariable Integer userId, @PathVariable Integer spotsNumber) {
+        routeService.bookSpots(userId, routeId, spotsNumber);
     }
 }
