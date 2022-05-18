@@ -1,9 +1,7 @@
 package travelling.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import travelling.entity.RouteEntity;
 import travelling.service.RouteService;
 
@@ -19,5 +17,10 @@ public class RouteController {
     @GetMapping
     public List<RouteEntity> getAllBooks() {
         return routeService.getAllRouts();
+    }
+
+    @PostMapping("/{routeId}/users/{userId}/spots/{spotsNumber}")
+    public void returnBook(@PathVariable Integer routeId, @PathVariable Integer userId, Integer spotsNumber) {
+
     }
 }

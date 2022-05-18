@@ -14,6 +14,7 @@ import travelling.service.impl.RouteServiceImpl;
 
 import java.util.Arrays;
 
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -41,6 +42,17 @@ class RouteControllerTest {
                 .andExpect(jsonPath("$[0].*", Matchers.hasSize(3)))
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[0].name").value("Munich-Berlin"));
+    }
+
+    @Test
+    public void testBookSpots() throws Exception {
+        doNothing().when(service).bookSpots(1, 1, 1);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .post("/route/{routeId}/users/{userId}/spots/{spotsNumber}", 1, 1, 1)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
 }
