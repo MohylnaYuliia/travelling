@@ -155,4 +155,30 @@ class RouteServiceImplTest {
         Assertions.assertEquals("Munich-Berlin", userRouteEntity.get().getRoute().getName());
         Assertions.assertEquals("John", userRouteEntity.get().getUser().getName());
     }
+
+    @Test
+    void testWhenTwoUsersBookSpots() {
+        routeRepository.save(RouteEntity.builder().id(1).name("Munich-Berlin").spots(10).build());
+        userRepository.save(UserEntity.builder().id(1).name("John").build());
+        userRepository.save(UserEntity.builder().id(2).name("Eddi").build());
+
+        service.bookSpots(1, 1, 1);
+        service.bookSpots(2, 1, 2);
+        List<UserRouteEntity> all = (List<UserRouteEntity>) userRouteRepository.findAll();
+        Assertions.assertEquals(2, all.size());
+
+        UserRouteEntity userRouteFirst = all.get(0);
+
+        Assertions.assertEquals(1, userRouteFirst.getSpotCount());
+        Assertions.assertEquals(7, userRouteFirst.getRoute().getSpots());
+        Assertions.assertEquals("Munich-Berlin", userRouteFirst.getRoute().getName());
+        Assertions.assertEquals("John", userRouteFirst.getUser().getName());
+
+        UserRouteEntity userRouteSecond = all.get(1);
+
+        Assertions.assertEquals(2, userRouteSecond.getSpotCount());
+        Assertions.assertEquals(7, userRouteSecond.getRoute().getSpots());
+        Assertions.assertEquals("Munich-Berlin", userRouteSecond.getRoute().getName());
+        Assertions.assertEquals("Eddi", userRouteSecond.getUser().getName());
+    }
 }
