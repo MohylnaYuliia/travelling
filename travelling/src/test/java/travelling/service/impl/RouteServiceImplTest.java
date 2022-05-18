@@ -6,7 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 import travelling.entity.RouteEntity;
 import travelling.entity.UserEntity;
 import travelling.entity.UserRouteEntity;
@@ -52,6 +54,8 @@ class RouteServiceImplTest {
     }
 
     @Test
+    @Transactional
+    @Rollback
     void testGetAllBooks() {
         routeRepository.save(RouteEntity.builder().id(1).name("Munich-Berlin").spots(10).build());
         Assertions.assertEquals(1, ((List<RouteEntity>) routeRepository.findAll()).size());
@@ -61,6 +65,8 @@ class RouteServiceImplTest {
     }
 
     @Test
+    @Transactional
+    @Rollback
     void testBookSpots() {
         routeRepository.save(RouteEntity.builder().id(1).name("Munich-Berlin").spots(10).build());
         userRepository.save(UserEntity.builder().id(1).name("John").build());
@@ -76,6 +82,8 @@ class RouteServiceImplTest {
     }
 
     @Test
+    @Transactional
+    @Rollback
     void testThrowExceptionWhenSpotsSoldOut() {
         routeRepository.save(RouteEntity.builder().id(1).name("Munich-Berlin").spots(0).build());
         userRepository.save(UserEntity.builder().id(1).name("John").build());
@@ -91,6 +99,8 @@ class RouteServiceImplTest {
     }
 
     @Test
+    @Transactional
+    @Rollback
     void testThrowExceptionWhenNotEnoughSpots() {
         routeRepository.save(RouteEntity.builder().id(1).name("Munich-Berlin").spots(1).build());
         userRepository.save(UserEntity.builder().id(1).name("John").build());
@@ -118,6 +128,8 @@ class RouteServiceImplTest {
     }
 
     @Test
+    @Transactional
+    @Rollback
     void testThrowExceptionWhenRouteNotExists() {
         userRepository.save(UserEntity.builder().id(1).name("John").build());
         RouteNotExistsException exception = Assertions.assertThrows(RouteNotExistsException.class, () -> {
@@ -131,6 +143,8 @@ class RouteServiceImplTest {
     }
 
     @Test
+    @Transactional
+    @Rollback
     void testWhenUserBooksTwoTimes() {
         routeRepository.save(RouteEntity.builder().id(1).name("Munich-Berlin").spots(10).build());
         userRepository.save(UserEntity.builder().id(1).name("John").build());
@@ -157,6 +171,8 @@ class RouteServiceImplTest {
     }
 
     @Test
+    @Transactional
+    @Rollback
     void testWhenTwoUsersBookSpots() {
         routeRepository.save(RouteEntity.builder().id(1).name("Munich-Berlin").spots(10).build());
         userRepository.save(UserEntity.builder().id(1).name("John").build());
