@@ -7,4 +7,6 @@ import java.util.List;
 public interface RouteService {
 
     List<RouteEntity> getAllRouts();
+
+    void bookSpots(Integer userId, Integer routId, int spotNumber);
 }

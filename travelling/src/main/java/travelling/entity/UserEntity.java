@@ -2,9 +2,9 @@ package travelling.entity;
 
 import lombok.*;
 
-import javax.persistence.CollectionTable;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Setter

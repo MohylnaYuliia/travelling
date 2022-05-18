@@ -22,4 +22,9 @@ public class RouteServiceImpl implements RouteService {
         routeRepository.findAll().forEach(result::add);
         return result;
     }
+
+    @Override
+    public void bookSpots(Integer userId, Integer routId, int spotNumber) {
+
+    }
 }

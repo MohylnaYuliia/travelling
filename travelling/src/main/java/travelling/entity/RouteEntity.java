@@ -15,7 +15,7 @@ import javax.persistence.Id;
 public class RouteEntity {
 
     @Id
-    @Column(name = "book_id")
+    @Column(name = "route_id")
     private Integer id;
 
     private String name;
