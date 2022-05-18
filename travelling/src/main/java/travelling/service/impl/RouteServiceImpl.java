@@ -7,6 +7,7 @@ import travelling.entity.RouteEntity;
 import travelling.entity.UserEntity;
 import travelling.entity.UserRouteEntity;
 import travelling.entity.UserRouteId;
+import travelling.exception.NotEnoughSpotsException;
 import travelling.exception.SpotsSoldOutException;
 import travelling.repository.RouteRepository;
 import travelling.repository.UserRepository;
@@ -45,6 +46,9 @@ public class RouteServiceImpl implements RouteService {
         RouteEntity route = routeEntity.get();
         if (route.getSpots() == 0) {
             throw new SpotsSoldOutException("All spots are sold out");
+        }
+        if (route.getSpots() < spotNumber) {
+            throw new NotEnoughSpotsException("Not enough spots");
         }
         route.setSpots(route.getSpots() - spotNumber);
 
