@@ -11,6 +11,7 @@ import travelling.entity.RouteEntity;
 import travelling.entity.UserEntity;
 import travelling.entity.UserRouteEntity;
 import travelling.entity.UserRouteId;
+import travelling.exception.NotEnoughSpotsException;
 import travelling.exception.SpotsSoldOutException;
 import travelling.repository.RouteRepository;
 import travelling.repository.UserRepository;
@@ -82,6 +83,21 @@ class RouteServiceImplTest {
         });
 
         Assertions.assertEquals("All spots are sold out", exception.getMessage());
+
+        Optional<UserRouteEntity> userRouteEntity = userRouteRepository.findById(UserRouteId.builder().routeId(1).userId(1).build());
+        Assertions.assertFalse(userRouteEntity.isPresent());
+    }
+
+    @Test
+    void testThrowExceptionWhenNotEnoughSpots() {
+        routeRepository.save(RouteEntity.builder().id(1).name("Munich-Berlin").spots(1).build());
+        userRepository.save(UserEntity.builder().id(1).name("John").build());
+
+        NotEnoughSpotsException exception = Assertions.assertThrows(NotEnoughSpotsException.class, () -> {
+            service.bookSpots(1, 1, 2);
+        });
+
+        Assertions.assertEquals("Not enough spots", exception.getMessage());
 
         Optional<UserRouteEntity> userRouteEntity = userRouteRepository.findById(UserRouteId.builder().routeId(1).userId(1).build());
         Assertions.assertFalse(userRouteEntity.isPresent());
