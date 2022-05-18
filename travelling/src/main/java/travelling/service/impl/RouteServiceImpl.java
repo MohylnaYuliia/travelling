@@ -18,6 +18,8 @@ import travelling.service.RouteService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class RouteServiceImpl implements RouteService {
@@ -50,10 +52,18 @@ public class RouteServiceImpl implements RouteService {
         if (routeEntity.getSpots() < spotNumber) {
             throw new NotEnoughSpotsException("Not enough spots");
         }
+        Optional<UserRouteEntity> userRouteEntity = userRouteRepository.findById(UserRouteId.builder().routeId(routId).userId(userId).build());
+        UserRouteEntity userRouteExisted = null;
+        if (userRouteEntity.isPresent()) {
+            userRouteExisted = userRouteEntity.get();
+        }
+
         routeEntity.setSpots(routeEntity.getSpots() - spotNumber);
 
         userRouteRepository.save(UserRouteEntity.builder()
                 .id(UserRouteId.builder().userId(userId).routeId(routId).build())
-                .route(routeEntity).user(userEntity).spotCount(spotNumber).build());
+                .route(routeEntity).user(userEntity)
+                .spotCount(Objects.isNull(userRouteExisted) ? spotNumber : spotNumber + userRouteExisted.getSpotCount())
+                .build());
     }
 }

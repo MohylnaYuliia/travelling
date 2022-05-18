@@ -134,6 +134,7 @@ class RouteServiceImplTest {
     void testWhenUserBooksTwoTimes() {
         routeRepository.save(RouteEntity.builder().id(1).name("Munich-Berlin").spots(10).build());
         userRepository.save(UserEntity.builder().id(1).name("John").build());
+
         service.bookSpots(1, 1, 1);
 
         Optional<UserRouteEntity> userRouteEntity = userRouteRepository.findById(UserRouteId.builder().routeId(1).userId(1).build());
