@@ -9,6 +9,7 @@ import travelling.entity.UserRouteEntity;
 import travelling.entity.UserRouteId;
 import travelling.exception.NotEnoughSpotsException;
 import travelling.exception.SpotsSoldOutException;
+import travelling.exception.UserNotExistsException;
 import travelling.repository.RouteRepository;
 import travelling.repository.UserRepository;
 import travelling.repository.UserRouteRepository;
@@ -40,7 +41,7 @@ public class RouteServiceImpl implements RouteService {
     @Override
     @Transactional
     public void bookSpots(Integer userId, Integer routId, int spotNumber) {
-        Optional<UserEntity> userEntity = userRepository.findById(userId);
+        UserEntity userEntity = userRepository.findById(userId).orElseThrow(() -> new UserNotExistsException("User not exists"));
         Optional<RouteEntity> routeEntity = routeRepository.findById(routId);
 
         RouteEntity route = routeEntity.get();
@@ -54,6 +55,6 @@ public class RouteServiceImpl implements RouteService {
 
         userRouteRepository.save(UserRouteEntity.builder()
                 .id(UserRouteId.builder().userId(userId).routeId(routId).build())
-                .route(route).user(userEntity.get()).spotCount(spotNumber).build());
+                .route(route).user(userEntity).spotCount(spotNumber).build());
     }
 }
