@@ -73,7 +73,7 @@ class RouteServiceImplTest {
     }
 
     @Test
-    void testThrowExceptionWhenNotEnoughSpotsSoldOut() {
+    void testThrowExceptionWhenSpotsSoldOut() {
         routeRepository.save(RouteEntity.builder().id(1).name("Munich-Berlin").spots(0).build());
         userRepository.save(UserEntity.builder().id(1).name("John").build());
 
@@ -84,7 +84,6 @@ class RouteServiceImplTest {
         Assertions.assertEquals("All spots are sold out", exception.getMessage());
 
         Optional<UserRouteEntity> userRouteEntity = userRouteRepository.findById(UserRouteId.builder().routeId(1).userId(1).build());
-
         Assertions.assertFalse(userRouteEntity.isPresent());
     }
 
