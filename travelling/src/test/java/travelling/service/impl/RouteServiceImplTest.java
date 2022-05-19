@@ -13,10 +13,7 @@ import travelling.entity.RouteEntity;
 import travelling.entity.UserEntity;
 import travelling.entity.UserRouteEntity;
 import travelling.entity.UserRouteId;
-import travelling.exception.NotEnoughSpotsException;
-import travelling.exception.RouteNotExistsException;
-import travelling.exception.SpotsSoldOutException;
-import travelling.exception.UserNotExistsException;
+import travelling.exception.*;
 import travelling.repository.RouteRepository;
 import travelling.repository.UserRepository;
 import travelling.repository.UserRouteRepository;
@@ -219,5 +216,13 @@ class RouteServiceImplTest {
         Assertions.assertFalse(userRouteRepository.existsById(UserRouteId.builder().userId(userEntity.getId()).routeId(routeEntity.getId()).build()));
         RouteEntity updatedRouteEntity = routeRepository.findById(1).get();
         Assertions.assertEquals(12, updatedRouteEntity.getSpots());
+    }
+
+    @Test
+    public void testWhenReservationNotExists() {
+        NoReservationExists exception = Assertions.assertThrows(NoReservationExists.class, () -> {
+            service.cancelReservation(1, 1);
+        });
+        Assertions.assertEquals("No reservation exists", exception.getMessage());
     }
 }
