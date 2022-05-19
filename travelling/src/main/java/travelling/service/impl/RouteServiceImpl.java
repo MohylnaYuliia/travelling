@@ -70,6 +70,9 @@ public class RouteServiceImpl implements RouteService {
                 .orElseThrow(() -> new NoReservationExists("No reservation exists"));
 
         RouteEntity route = reservation.getRoute();
+        if (spots > reservation.getSpotCount()) {
+            throw new CancellationSpotsMoreThanBooked("You try to cancel spots more than were reserved");
+        }
         if (spots == 0) {
             route.setSpots(route.getSpots() + reservation.getSpotCount());
             userRouteRepository.delete(reservation);
