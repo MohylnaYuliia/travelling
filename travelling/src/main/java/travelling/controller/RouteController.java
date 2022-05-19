@@ -26,6 +26,6 @@ public class RouteController {
 
     @DeleteMapping("/{routeId}/users/{userId}")
     public void cancelReservation(@PathVariable Integer routeId, @PathVariable Integer userId) {
-
+        routeService.cancelReservation(userId, routeId);
     }
 }
