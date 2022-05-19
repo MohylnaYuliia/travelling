@@ -65,7 +65,7 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
-    public void cancelReservation(Integer userId, Integer routId) {
+    public void cancelReservation(Integer userId, Integer routId, Integer spots) {
         UserRouteEntity reservation = userRouteRepository.findById(UserRouteId.builder().routeId(routId).userId(userId).build())
                 .orElseThrow(() -> new NoReservationExists("No reservation exists"));
 

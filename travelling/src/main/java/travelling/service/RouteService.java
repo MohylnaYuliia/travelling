@@ -10,5 +10,5 @@ public interface RouteService {
 
     void bookSpots(Integer userId, Integer routId, Integer spotNumber);
 
-    void cancelReservation(Integer userId, Integer routId);
+    void cancelReservation(Integer userId, Integer routId, Integer spots);
 }

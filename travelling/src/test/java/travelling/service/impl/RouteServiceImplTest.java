@@ -211,7 +211,7 @@ class RouteServiceImplTest {
                 .spotCount(2)
                 .build());
 
-        service.cancelReservation(1, 1);
+        service.cancelReservation(1, 1, 0);
 
         Assertions.assertFalse(userRouteRepository.existsById(UserRouteId.builder().userId(userEntity.getId()).routeId(routeEntity.getId()).build()));
         RouteEntity updatedRouteEntity = routeRepository.findById(1).get();
@@ -221,8 +221,31 @@ class RouteServiceImplTest {
     @Test
     public void testWhenReservationNotExists() {
         NoReservationExists exception = Assertions.assertThrows(NoReservationExists.class, () -> {
-            service.cancelReservation(1, 1);
+            service.cancelReservation(1, 1, 0);
         });
         Assertions.assertEquals("No reservation exists", exception.getMessage());
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void testFlexibleCancellation() {
+        RouteEntity routeEntity = RouteEntity.builder().id(1).name("Munich-Berlin").spots(10).build();
+        routeRepository.save(routeEntity);
+        UserEntity userEntity = UserEntity.builder().id(1).name("John").build();
+        userRepository.save(userEntity);
+
+        userRouteRepository.save(UserRouteEntity.builder()
+                .id(UserRouteId.builder().userId(userEntity.getId()).routeId(routeEntity.getId()).build())
+                .route(routeEntity)
+                .user(userEntity)
+                .spotCount(2)
+                .build());
+
+        service.cancelReservation(1, 1, 1);
+
+        Assertions.assertFalse(userRouteRepository.existsById(UserRouteId.builder().userId(userEntity.getId()).routeId(routeEntity.getId()).build()));
+        RouteEntity updatedRouteEntity = routeRepository.findById(1).get();
+        Assertions.assertEquals(11, updatedRouteEntity.getSpots());
     }
 }
