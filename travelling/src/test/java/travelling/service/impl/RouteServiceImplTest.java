@@ -244,7 +244,10 @@ class RouteServiceImplTest {
 
         service.cancelReservation(1, 1, 1);
 
-        Assertions.assertFalse(userRouteRepository.existsById(UserRouteId.builder().userId(userEntity.getId()).routeId(routeEntity.getId()).build()));
+        Assertions.assertTrue(userRouteRepository.existsById(UserRouteId.builder().userId(userEntity.getId()).routeId(routeEntity.getId()).build()));
+        UserRouteEntity userRouteEntity = userRouteRepository.findById(UserRouteId.builder().userId(userEntity.getId()).routeId(routeEntity.getId()).build()).get();
+        Assertions.assertEquals(1, userRouteEntity.getSpotCount());
+
         RouteEntity updatedRouteEntity = routeRepository.findById(1).get();
         Assertions.assertEquals(11, updatedRouteEntity.getSpots());
     }

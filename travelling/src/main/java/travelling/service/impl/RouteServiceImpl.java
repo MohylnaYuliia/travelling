@@ -70,9 +70,13 @@ public class RouteServiceImpl implements RouteService {
                 .orElseThrow(() -> new NoReservationExists("No reservation exists"));
 
         RouteEntity route = reservation.getRoute();
-        route.setSpots(route.getSpots() + reservation.getSpotCount());
-
-        userRouteRepository.delete(reservation);
+        if (spots == 0) {
+            route.setSpots(route.getSpots() + reservation.getSpotCount());
+            userRouteRepository.delete(reservation);
+            return;
+        }
+        route.setSpots(route.getSpots() + spots);
+        reservation.setSpotCount(reservation.getSpotCount() - spots);
         routeRepository.save(route);
     }
 }

@@ -57,7 +57,7 @@ class RouteControllerTest {
 
     @Test
     public void testCancelReservation() throws Exception {
-        doNothing().when(service).cancelReservation(1, 1);
+        doNothing().when(service).cancelReservation(1, 1, 0);
 
         mockMvc.perform(MockMvcRequestBuilders
                 .delete("/route/{routeId}/users/{userId}", 1, 1)
