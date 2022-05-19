@@ -251,4 +251,35 @@ class RouteServiceImplTest {
         RouteEntity updatedRouteEntity = routeRepository.findById(1).get();
         Assertions.assertEquals(11, updatedRouteEntity.getSpots());
     }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void testWhenFlexibleCancellationSpotsMOeThenOrdered() {
+        RouteEntity routeEntity = RouteEntity.builder().id(1).name("Munich-Berlin").spots(10).build();
+        routeRepository.save(routeEntity);
+        UserEntity userEntity = UserEntity.builder().id(1).name("John").build();
+        userRepository.save(userEntity);
+
+        userRouteRepository.save(UserRouteEntity.builder()
+                .id(UserRouteId.builder().userId(userEntity.getId()).routeId(routeEntity.getId()).build())
+                .route(routeEntity)
+                .user(userEntity)
+                .spotCount(2)
+                .build());
+
+        CancellationSpotsMoreThanBooked exception = Assertions.assertThrows(CancellationSpotsMoreThanBooked.class, () -> {
+            service.cancelReservation(1, 1, 3);
+        });
+
+        Assertions.assertEquals("You try to cancel spots more than were reserved", exception.getMessage());
+
+
+        Assertions.assertTrue(userRouteRepository.existsById(UserRouteId.builder().userId(userEntity.getId()).routeId(routeEntity.getId()).build()));
+        UserRouteEntity userRouteEntity = userRouteRepository.findById(UserRouteId.builder().userId(userEntity.getId()).routeId(routeEntity.getId()).build()).get();
+        Assertions.assertEquals(2, userRouteEntity.getSpotCount());
+
+        RouteEntity updatedRouteEntity = routeRepository.findById(1).get();
+        Assertions.assertEquals(10, updatedRouteEntity.getSpots());
+    }
 }
