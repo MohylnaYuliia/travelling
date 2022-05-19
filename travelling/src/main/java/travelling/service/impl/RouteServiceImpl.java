@@ -7,10 +7,7 @@ import travelling.entity.RouteEntity;
 import travelling.entity.UserEntity;
 import travelling.entity.UserRouteEntity;
 import travelling.entity.UserRouteId;
-import travelling.exception.NotEnoughSpotsException;
-import travelling.exception.RouteNotExistsException;
-import travelling.exception.SpotsSoldOutException;
-import travelling.exception.UserNotExistsException;
+import travelling.exception.*;
 import travelling.repository.RouteRepository;
 import travelling.repository.UserRepository;
 import travelling.repository.UserRouteRepository;
@@ -69,6 +66,13 @@ public class RouteServiceImpl implements RouteService {
 
     @Override
     public void cancelReservation(Integer userId, Integer routId) {
+        UserRouteEntity reservation = userRouteRepository.findById(UserRouteId.builder().routeId(routId).userId(userId).build())
+                .orElseThrow(() -> new NoReservationExists("No reservation exists"));
 
+        RouteEntity route = reservation.getRoute();
+        route.setSpots(route.getSpots() + reservation.getSpotCount());
+
+        userRouteRepository.delete(reservation);
+        routeRepository.save(route);
     }
 }

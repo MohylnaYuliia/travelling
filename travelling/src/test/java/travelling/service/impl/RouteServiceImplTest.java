@@ -218,6 +218,6 @@ class RouteServiceImplTest {
 
         Assertions.assertFalse(userRouteRepository.existsById(UserRouteId.builder().userId(userEntity.getId()).routeId(routeEntity.getId()).build()));
         RouteEntity updatedRouteEntity = routeRepository.findById(1).get();
-        Assertions.assertEquals(12, updatedRouteEntity);
+        Assertions.assertEquals(12, updatedRouteEntity.getSpots());
     }
 }
