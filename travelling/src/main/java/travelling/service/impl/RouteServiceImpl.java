@@ -66,4 +66,9 @@ public class RouteServiceImpl implements RouteService {
                 .spotCount(Objects.isNull(userRouteExisted) ? spotNumber : spotNumber + userRouteExisted.getSpotCount())
                 .build());
     }
+
+    @Override
+    public void cancelReservation(Integer userId, Integer routId) {
+
+    }
 }

@@ -197,4 +197,27 @@ class RouteServiceImplTest {
         Assertions.assertEquals("Munich-Berlin", userRouteSecond.getRoute().getName());
         Assertions.assertEquals("Eddi", userRouteSecond.getUser().getName());
     }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void testCancelSpots() {
+        RouteEntity routeEntity = RouteEntity.builder().id(1).name("Munich-Berlin").spots(10).build();
+        routeRepository.save(routeEntity);
+        UserEntity userEntity = UserEntity.builder().id(1).name("John").build();
+        userRepository.save(userEntity);
+
+        userRouteRepository.save(UserRouteEntity.builder()
+                .id(UserRouteId.builder().userId(userEntity.getId()).routeId(routeEntity.getId()).build())
+                .route(routeEntity)
+                .user(userEntity)
+                .spotCount(2)
+                .build());
+
+        service.cancelReservation(1, 1);
+
+        Assertions.assertFalse(userRouteRepository.existsById(UserRouteId.builder().userId(userEntity.getId()).routeId(routeEntity.getId()).build()));
+        RouteEntity updatedRouteEntity = routeRepository.findById(1).get();
+        Assertions.assertEquals(12, updatedRouteEntity);
+    }
 }
