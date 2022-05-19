@@ -23,4 +23,9 @@ public class RouteController {
     public void bookRoute(@PathVariable Integer routeId, @PathVariable Integer userId, @PathVariable Integer spotsNumber) {
         routeService.bookSpots(userId, routeId, spotsNumber);
     }
+
+    @DeleteMapping("/{routeId}/users/{userId}")
+    public void cancelReservation(@PathVariable Integer routeId, @PathVariable Integer userId) {
+
+    }
 }

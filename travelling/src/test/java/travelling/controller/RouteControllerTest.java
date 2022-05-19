@@ -55,4 +55,15 @@ class RouteControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    public void testCancelReservation() throws Exception {
+        doNothing().when(service).cancelReservation(1, 1);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .delete("/route/{routeId}/users/{userId}", 1, 1)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
 }
