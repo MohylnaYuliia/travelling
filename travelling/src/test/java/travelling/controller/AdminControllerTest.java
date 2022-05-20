@@ -50,7 +50,7 @@ class AdminControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.*", Matchers.hasSize(1)))
                 .andExpect(jsonPath("$[0].*", Matchers.hasSize(4)))
-                .andExpect(jsonPath("$[0].spotsCount").value(1));
+                .andExpect(jsonPath("$[0].spotCount").value(1));
     }
 
 }

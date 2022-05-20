@@ -14,10 +14,10 @@ import java.util.List;
 public class AdminController {
 
     @Autowired
-    private AdminService userService;
+    private AdminService adminService;
 
     @GetMapping
     public List<UserRouteEntity> getInformation() {
-        return null;
+        return adminService.getAllInformation();
     }
 }
