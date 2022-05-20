@@ -255,7 +255,7 @@ class RouteServiceImplTest {
     @Test
     @Transactional
     @Rollback
-    public void testWhenFlexibleCancellationSpotsMOeThenOrdered() {
+    public void testWhenFlexibleCancellationSpotsMoreThenOrdered() {
         RouteEntity routeEntity = RouteEntity.builder().id(1).name("Munich-Berlin").spots(10).build();
         routeRepository.save(routeEntity);
         UserEntity userEntity = UserEntity.builder().id(1).name("John").build();

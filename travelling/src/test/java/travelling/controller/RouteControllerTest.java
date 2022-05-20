@@ -66,4 +66,15 @@ class RouteControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    public void testFlexibleCancellation() throws Exception {
+        doNothing().when(service).cancelReservation(1, 1, 1);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .delete("/route/{routeId}/users/{userId}/spots/{spotsNumber}", 1, 1, 1)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
 }
