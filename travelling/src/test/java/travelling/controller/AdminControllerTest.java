@@ -9,10 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import travelling.entity.RouteEntity;
-import travelling.entity.UserEntity;
-import travelling.entity.UserRouteEntity;
-import travelling.entity.UserRouteId;
+import travelling.dto.UserRouteDto;
 import travelling.service.impl.AdminServiceImpl;
 
 import java.util.Arrays;
@@ -34,23 +31,17 @@ class AdminControllerTest {
 
     @Test
     void getAllRoutes() throws Exception {
-        RouteEntity routeFirst = RouteEntity.builder().id(1).name("Berlin-Paris").spots(10).build();
-        UserEntity userEntity = UserEntity.builder().id(1).name("John").build();
-        UserRouteEntity userRouteEntity = UserRouteEntity.builder()
-                .id(UserRouteId.builder().userId(1).routeId(1).build())
-                .spotCount(1)
-                .user(userEntity)
-                .route(routeFirst).build();
+        UserRouteDto dto = UserRouteDto.builder().routeName("Berlin-Paris").routeId(1).userId(1).userName("John").routeSpotsNumber(10).reservedSpots(1).build();
 
-        when(service.getAllInformation()).thenReturn(Arrays.asList(userRouteEntity));
+        when(service.getAllInformation()).thenReturn(Arrays.asList(dto));
         mockMvc.perform(MockMvcRequestBuilders
                 .get("/admin")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.*", Matchers.hasSize(1)))
-                .andExpect(jsonPath("$[0].*", Matchers.hasSize(4)))
-                .andExpect(jsonPath("$[0].spotCount").value(1));
+                .andExpect(jsonPath("$[0].*", Matchers.hasSize(6)))
+                .andExpect(jsonPath("$[0].reservedSpots").value(1));
     }
 
 }

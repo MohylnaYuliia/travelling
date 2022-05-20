@@ -16,8 +16,6 @@ import travelling.repository.RouteRepository;
 import travelling.repository.UserRepository;
 import travelling.repository.UserRouteRepository;
 
-import java.util.List;
-
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 class AdminServiceImplTest {
@@ -48,7 +46,7 @@ class AdminServiceImplTest {
                 .user(userEntity)
                 .route(routeFirst)
                 .build());
-        Assertions.assertEquals(1, ((List<UserRouteEntity>) adminService.getAllInformation()).size());
+        Assertions.assertEquals(1, adminService.getAllInformation().size());
     }
 
 }

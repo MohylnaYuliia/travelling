@@ -2,7 +2,9 @@ package travelling.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import travelling.dto.UserRouteDto;
 import travelling.entity.UserRouteEntity;
+import travelling.mapper.UserRouteEntityToDtoMapper;
 import travelling.repository.UserRouteRepository;
 import travelling.service.AdminService;
 
@@ -15,10 +17,13 @@ public class AdminServiceImpl implements AdminService {
     @Autowired
     private UserRouteRepository userRouteRepository;
 
+    @Autowired
+    protected UserRouteEntityToDtoMapper mapper;
+
     @Override
-    public List<UserRouteEntity> getAllInformation() {
+    public List<UserRouteDto> getAllInformation() {
         List<UserRouteEntity> result = new ArrayList<>();
         userRouteRepository.findAll().forEach(result::add);
-        return result;
+        return mapper.map(result);
     }
 }

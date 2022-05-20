@@ -1,10 +1,10 @@
 package travelling.service;
 
-import travelling.entity.UserRouteEntity;
+import travelling.dto.UserRouteDto;
 
 import java.util.List;
 
 public interface AdminService {
 
-    List<UserRouteEntity> getAllInformation();
+    List<UserRouteDto> getAllInformation();
 }
