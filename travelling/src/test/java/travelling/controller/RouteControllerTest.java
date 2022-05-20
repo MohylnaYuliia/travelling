@@ -10,10 +10,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import travelling.entity.RouteEntity;
+import travelling.exception.WrongNumberOfSpotsException;
 import travelling.service.impl.RouteServiceImpl;
 
 import java.util.Arrays;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -75,6 +78,16 @@ class RouteControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testThrowExceptionWhenNumberOfSpotsIsZero() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                .delete("/route/{routeId}/users/{userId}/spots/{spotsNumber}", 1, 1, -1)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isPreconditionFailed())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof WrongNumberOfSpotsException))
+                .andExpect(result -> assertEquals("Number of spots must be greater than 0", result.getResolvedException().getMessage()));
     }
 
 }

@@ -3,6 +3,7 @@ package travelling.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import travelling.entity.RouteEntity;
+import travelling.exception.WrongNumberOfSpotsException;
 import travelling.service.RouteService;
 
 import java.util.List;
@@ -21,6 +22,9 @@ public class RouteController {
 
     @PostMapping("/{routeId}/users/{userId}/spots/{spotsNumber}")
     public void bookRoute(@PathVariable Integer routeId, @PathVariable Integer userId, @PathVariable Integer spotsNumber) {
+        if (spotsNumber <= 0) {
+            throw new WrongNumberOfSpotsException("Number of spots must be greater than 0");
+        }
         routeService.bookSpots(userId, routeId, spotsNumber);
     }
 
@@ -31,6 +35,9 @@ public class RouteController {
 
     @DeleteMapping("/{routeId}/users/{userId}/spots/{spotsNumber}")
     public void cancelSpots(@PathVariable Integer routeId, @PathVariable Integer userId, @PathVariable Integer spotsNumber) {
+        if (spotsNumber <= 0) {
+            throw new WrongNumberOfSpotsException("Number of spots must be greater than 0");
+        }
         routeService.cancelReservation(userId, routeId, spotsNumber);
     }
 }
