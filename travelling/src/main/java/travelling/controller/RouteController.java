@@ -31,6 +31,6 @@ public class RouteController {
 
     @DeleteMapping("/{routeId}/users/{userId}/spots/{spotsNumber}")
     public void cancelSpots(@PathVariable Integer routeId, @PathVariable Integer userId, @PathVariable Integer spotsNumber) {
-
+        routeService.cancelReservation(userId, routeId, spotsNumber);
     }
 }
