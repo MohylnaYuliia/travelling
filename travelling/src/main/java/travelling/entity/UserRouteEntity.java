@@ -15,7 +15,7 @@ public class UserRouteEntity {
     @EmbeddedId
     private UserRouteId id;
 
-    @ManyToOne(cascade = CascadeType.ALL) //check his type
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH}) //check his type
     @MapsId("userId")
     @JoinColumn(name = "user_id")
     private UserEntity user;

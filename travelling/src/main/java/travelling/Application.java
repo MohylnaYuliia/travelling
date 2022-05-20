@@ -27,10 +27,12 @@ public class Application {
     public CommandLineRunner demo() {
         return (args) -> {
             userRepository.save(UserEntity.builder().id(1).name("John").build());
-            userRepository.save(UserEntity.builder().id(2).name("Brian").build());
+            userRepository.save(UserEntity.builder().id(2).name("Jane").build());
+            userRepository.save(UserEntity.builder().id(3).name("Ronald").build());
+            userRepository.save(UserEntity.builder().id(4).name("Daniel").build());
 
             routeRepository.save(RouteEntity.builder().id(1).name("Munich-Berlin").spots(10).build());
-            routeRepository.save(RouteEntity.builder().id(1).name("Munich-Stuttgart").spots(5).build());
+            routeRepository.save(RouteEntity.builder().id(2).name("Munich-Stuttgart").spots(5).build());
         };
     }
 }
