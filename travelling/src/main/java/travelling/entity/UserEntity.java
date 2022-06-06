@@ -15,7 +15,7 @@ import java.util.Set;
 public class UserEntity {
 
     @Id
-    @CollectionTable(name = "user_id")
+    @Column(name = "user_id")
     private Integer id;
 
     private String name;

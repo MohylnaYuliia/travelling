@@ -11,11 +11,15 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface UserRouteEntityToDtoMapper {
 
+    List<UserRouteDto> map(List<UserRouteEntity> userRouteEntityList);
+
     @Mappings({
-            @Mapping(target="routeName", source="route.name"),
-            @Mapping(target="userName", source="user.name"),
-            @Mapping(target="reservedSpots", source="spotCount"),
-            @Mapping(target="routeSpotsNumber", source="route.spots"),
+            @Mapping(target="routeName", source="userRouteEntity.route.name"),
+            @Mapping(target="userName", source="userRouteEntity.user.name"),
+            @Mapping(target="routeSpotsNumber", source="userRouteEntity.route.spots"),
+            @Mapping(target="reservedSpots", source="userRouteEntity.spotCount"),
+            @Mapping(target = "userId", source = "userRouteEntity.user.id"),
+            @Mapping(target="routeId", source="userRouteEntity.route.id")
     })
-    List<UserRouteDto> map(List<UserRouteEntity> bookEntity);
+    UserRouteDto map(UserRouteEntity userRouteEntity);
 }
