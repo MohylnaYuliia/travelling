@@ -28,8 +28,8 @@ import static travelling.constant.Constants.DEFAULT_NUMBER_TO_CANCEL_ALL_SPOTS;
 import static travelling.constant.Constants.NOT_ENOUGH_SPOTS;
 import static travelling.constant.Constants.NO_RESERVATION_EXISTS;
 import static travelling.constant.Constants.ROUTE_NOT_EXISTS;
-import static travelling.constant.Constants.USER_NOT_EXISTS;
 import static travelling.constant.Constants.TRY_TO_CANCEL_MORE_THAN_RESERVED;
+import static travelling.constant.Constants.USER_NOT_EXISTS;
 
 @Service
 public class RouteServiceImpl implements RouteService {
@@ -56,11 +56,11 @@ public class RouteServiceImpl implements RouteService {
         UserEntity userEntity = userRepository.findById(userId).orElseThrow(() -> new UserNotExistsException(USER_NOT_EXISTS));
         RouteEntity routeEntity = routeRepository.findById(routId).orElseThrow(() -> new RouteNotExistsException(ROUTE_NOT_EXISTS));
 
+        if (routeEntity.getSpots() != 0 && routeEntity.getSpots() < spotNumber) {
+            throw new NotEnoughSpotsException(NOT_ENOUGH_SPOTS);
+        }
         if (routeEntity.getSpots() == 0) {
             throw new SpotsSoldOutException(ALL_SPOTS_SOLD_OUT);
-        }
-        if (routeEntity.getSpots() < spotNumber) {
-            throw new NotEnoughSpotsException(NOT_ENOUGH_SPOTS);
         }
         Optional<UserRouteEntity> userRouteEntity = userRouteRepository.findById(UserRouteId.builder().routeId(routId).userId(userId).build());
         UserRouteEntity userRouteExisted = null;
