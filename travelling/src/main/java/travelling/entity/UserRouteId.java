@@ -12,7 +12,7 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserRouteId  implements Serializable {
+public class UserRouteId implements Serializable {
 
     Integer userId;
 

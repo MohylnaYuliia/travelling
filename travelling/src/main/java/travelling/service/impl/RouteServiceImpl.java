@@ -7,7 +7,12 @@ import travelling.entity.RouteEntity;
 import travelling.entity.UserEntity;
 import travelling.entity.UserRouteEntity;
 import travelling.entity.UserRouteId;
-import travelling.exception.*;
+import travelling.exception.CancellationSpotsMoreThanBooked;
+import travelling.exception.NoReservationExists;
+import travelling.exception.NotEnoughSpotsException;
+import travelling.exception.RouteNotExistsException;
+import travelling.exception.SpotsSoldOutException;
+import travelling.exception.UserNotExistsException;
 import travelling.repository.RouteRepository;
 import travelling.repository.UserRepository;
 import travelling.repository.UserRouteRepository;
@@ -17,6 +22,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
+import static travelling.constant.Constants.ALL_SPOTS_SOLD_OUT;
+import static travelling.constant.Constants.DEFAULT_NUMBER_TO_CANCEL_ALL_SPOTS;
+import static travelling.constant.Constants.NOT_ENOUGH_SPOTS;
+import static travelling.constant.Constants.NO_RESERVATION_EXISTS;
+import static travelling.constant.Constants.ROUTE_NOT_EXISTS;
+import static travelling.constant.Constants.USER_NOT_EXISTS;
+import static travelling.constant.Constants.TRY_TO_CANCEL_MORE_THAN_RESERVED;
 
 @Service
 public class RouteServiceImpl implements RouteService {
@@ -40,14 +53,14 @@ public class RouteServiceImpl implements RouteService {
     @Override
     @Transactional
     public void bookSpots(Integer userId, Integer routId, Integer spotNumber) {
-        UserEntity userEntity = userRepository.findById(userId).orElseThrow(() -> new UserNotExistsException("User not exists"));
-        RouteEntity routeEntity = routeRepository.findById(routId).orElseThrow(() -> new RouteNotExistsException("Route not exists"));
+        UserEntity userEntity = userRepository.findById(userId).orElseThrow(() -> new UserNotExistsException(USER_NOT_EXISTS));
+        RouteEntity routeEntity = routeRepository.findById(routId).orElseThrow(() -> new RouteNotExistsException(ROUTE_NOT_EXISTS));
 
         if (routeEntity.getSpots() == 0) {
-            throw new SpotsSoldOutException("All spots are sold out");
+            throw new SpotsSoldOutException(ALL_SPOTS_SOLD_OUT);
         }
         if (routeEntity.getSpots() < spotNumber) {
-            throw new NotEnoughSpotsException("Not enough spots");
+            throw new NotEnoughSpotsException(NOT_ENOUGH_SPOTS);
         }
         Optional<UserRouteEntity> userRouteEntity = userRouteRepository.findById(UserRouteId.builder().routeId(routId).userId(userId).build());
         UserRouteEntity userRouteExisted = null;
@@ -67,13 +80,13 @@ public class RouteServiceImpl implements RouteService {
     @Override
     public void cancelReservation(Integer userId, Integer routId, Integer spots) {
         UserRouteEntity reservation = userRouteRepository.findById(UserRouteId.builder().routeId(routId).userId(userId).build())
-                .orElseThrow(() -> new NoReservationExists("No reservation exists"));
+                .orElseThrow(() -> new NoReservationExists(NO_RESERVATION_EXISTS));
 
         RouteEntity route = reservation.getRoute();
         if (spots > reservation.getSpotCount()) {
-            throw new CancellationSpotsMoreThanBooked("You try to cancel spots more than were reserved");
+            throw new CancellationSpotsMoreThanBooked(TRY_TO_CANCEL_MORE_THAN_RESERVED);
         }
-        if (spots == 0) {
+        if (spots == DEFAULT_NUMBER_TO_CANCEL_ALL_SPOTS) {
             route.setSpots(route.getSpots() + reservation.getSpotCount());
             userRouteRepository.delete(reservation);
             return;

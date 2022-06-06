@@ -13,7 +13,12 @@ import travelling.entity.RouteEntity;
 import travelling.entity.UserEntity;
 import travelling.entity.UserRouteEntity;
 import travelling.entity.UserRouteId;
-import travelling.exception.*;
+import travelling.exception.CancellationSpotsMoreThanBooked;
+import travelling.exception.NoReservationExists;
+import travelling.exception.NotEnoughSpotsException;
+import travelling.exception.RouteNotExistsException;
+import travelling.exception.SpotsSoldOutException;
+import travelling.exception.UserNotExistsException;
 import travelling.repository.RouteRepository;
 import travelling.repository.UserRepository;
 import travelling.repository.UserRouteRepository;
@@ -21,9 +26,20 @@ import travelling.repository.UserRouteRepository;
 import java.util.List;
 import java.util.Optional;
 
+import static travelling.constant.Constants.ALL_SPOTS_SOLD_OUT;
+import static travelling.constant.Constants.NOT_ENOUGH_SPOTS;
+import static travelling.constant.Constants.NO_RESERVATION_EXISTS;
+import static travelling.constant.Constants.ROUTE_NOT_EXISTS;
+import static travelling.constant.Constants.USER_NOT_EXISTS;
+import static travelling.constant.Constants.TRY_TO_CANCEL_MORE_THAN_RESERVED;
+
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 class RouteServiceImplTest {
+
+    private static final String ROUTE_NAME = "Munich-Berlin";
+    private static final String USER_NAME = "John";
+    private static final int SPOTS = 10;
 
     @Autowired
     private RouteServiceImpl service;
@@ -54,19 +70,19 @@ class RouteServiceImplTest {
     @Transactional
     @Rollback
     void testGetAllBooks() {
-        routeRepository.save(RouteEntity.builder().id(1).name("Munich-Berlin").spots(10).build());
+        routeRepository.save(RouteEntity.builder().id(1).name(ROUTE_NAME).spots(SPOTS).build());
         Assertions.assertEquals(1, ((List<RouteEntity>) routeRepository.findAll()).size());
 
         Assertions.assertEquals(1, service.getAllRouts().size());
-        Assertions.assertEquals("Munich-Berlin", ((List<RouteEntity>) routeRepository.findAll()).get(0).getName());
+        Assertions.assertEquals(ROUTE_NAME, ((List<RouteEntity>) routeRepository.findAll()).get(0).getName());
     }
 
     @Test
     @Transactional
     @Rollback
     void testBookSpots() {
-        routeRepository.save(RouteEntity.builder().id(1).name("Munich-Berlin").spots(10).build());
-        userRepository.save(UserEntity.builder().id(1).name("John").build());
+        routeRepository.save(RouteEntity.builder().id(1).name(ROUTE_NAME).spots(SPOTS).build());
+        userRepository.save(UserEntity.builder().id(1).name(USER_NAME).build());
 
         service.bookSpots(1, 1, 1);
         Optional<UserRouteEntity> userRouteEntity = userRouteRepository.findById(UserRouteId.builder().routeId(1).userId(1).build());
@@ -74,22 +90,22 @@ class RouteServiceImplTest {
         Assertions.assertTrue(userRouteEntity.isPresent());
         Assertions.assertEquals(1, userRouteEntity.get().getSpotCount());
         Assertions.assertEquals(9, userRouteEntity.get().getRoute().getSpots());
-        Assertions.assertEquals("Munich-Berlin", userRouteEntity.get().getRoute().getName());
-        Assertions.assertEquals("John", userRouteEntity.get().getUser().getName());
+        Assertions.assertEquals(ROUTE_NAME, userRouteEntity.get().getRoute().getName());
+        Assertions.assertEquals(USER_NAME, userRouteEntity.get().getUser().getName());
     }
 
     @Test
     @Transactional
     @Rollback
     void testThrowExceptionWhenSpotsSoldOut() {
-        routeRepository.save(RouteEntity.builder().id(1).name("Munich-Berlin").spots(0).build());
-        userRepository.save(UserEntity.builder().id(1).name("John").build());
+        routeRepository.save(RouteEntity.builder().id(1).name(ROUTE_NAME).spots(0).build());
+        userRepository.save(UserEntity.builder().id(1).name(USER_NAME).build());
 
         SpotsSoldOutException exception = Assertions.assertThrows(SpotsSoldOutException.class, () -> {
             service.bookSpots(1, 1, 1);
         });
 
-        Assertions.assertEquals("All spots are sold out", exception.getMessage());
+        Assertions.assertEquals(ALL_SPOTS_SOLD_OUT, exception.getMessage());
 
         Optional<UserRouteEntity> userRouteEntity = userRouteRepository.findById(UserRouteId.builder().routeId(1).userId(1).build());
         Assertions.assertFalse(userRouteEntity.isPresent());
@@ -99,14 +115,14 @@ class RouteServiceImplTest {
     @Transactional
     @Rollback
     void testThrowExceptionWhenNotEnoughSpots() {
-        routeRepository.save(RouteEntity.builder().id(1).name("Munich-Berlin").spots(1).build());
-        userRepository.save(UserEntity.builder().id(1).name("John").build());
+        routeRepository.save(RouteEntity.builder().id(1).name(ROUTE_NAME).spots(1).build());
+        userRepository.save(UserEntity.builder().id(1).name(USER_NAME).build());
 
         NotEnoughSpotsException exception = Assertions.assertThrows(NotEnoughSpotsException.class, () -> {
             service.bookSpots(1, 1, 2);
         });
 
-        Assertions.assertEquals("Not enough spots", exception.getMessage());
+        Assertions.assertEquals(NOT_ENOUGH_SPOTS, exception.getMessage());
 
         Optional<UserRouteEntity> userRouteEntity = userRouteRepository.findById(UserRouteId.builder().routeId(1).userId(1).build());
         Assertions.assertFalse(userRouteEntity.isPresent());
@@ -118,7 +134,7 @@ class RouteServiceImplTest {
             service.bookSpots(1, 1, 2);
         });
 
-        Assertions.assertEquals("User not exists", exception.getMessage());
+        Assertions.assertEquals(USER_NOT_EXISTS, exception.getMessage());
 
         Optional<UserRouteEntity> userRouteEntity = userRouteRepository.findById(UserRouteId.builder().routeId(1).userId(1).build());
         Assertions.assertFalse(userRouteEntity.isPresent());
@@ -128,12 +144,12 @@ class RouteServiceImplTest {
     @Transactional
     @Rollback
     void testThrowExceptionWhenRouteNotExists() {
-        userRepository.save(UserEntity.builder().id(1).name("John").build());
+        userRepository.save(UserEntity.builder().id(1).name(USER_NAME).build());
         RouteNotExistsException exception = Assertions.assertThrows(RouteNotExistsException.class, () -> {
             service.bookSpots(1, 1, 2);
         });
 
-        Assertions.assertEquals("Route not exists", exception.getMessage());
+        Assertions.assertEquals(ROUTE_NOT_EXISTS, exception.getMessage());
 
         Optional<UserRouteEntity> userRouteEntity = userRouteRepository.findById(UserRouteId.builder().routeId(1).userId(1).build());
         Assertions.assertFalse(userRouteEntity.isPresent());
@@ -143,8 +159,8 @@ class RouteServiceImplTest {
     @Transactional
     @Rollback
     void testWhenUserBooksTwoTimes() {
-        routeRepository.save(RouteEntity.builder().id(1).name("Munich-Berlin").spots(10).build());
-        userRepository.save(UserEntity.builder().id(1).name("John").build());
+        routeRepository.save(RouteEntity.builder().id(1).name(ROUTE_NAME).spots(SPOTS).build());
+        userRepository.save(UserEntity.builder().id(1).name(USER_NAME).build());
 
         service.bookSpots(1, 1, 1);
 
@@ -153,8 +169,8 @@ class RouteServiceImplTest {
         Assertions.assertTrue(userRouteEntity.isPresent());
         Assertions.assertEquals(1, userRouteEntity.get().getSpotCount());
         Assertions.assertEquals(9, userRouteEntity.get().getRoute().getSpots());
-        Assertions.assertEquals("Munich-Berlin", userRouteEntity.get().getRoute().getName());
-        Assertions.assertEquals("John", userRouteEntity.get().getUser().getName());
+        Assertions.assertEquals(ROUTE_NAME, userRouteEntity.get().getRoute().getName());
+        Assertions.assertEquals(USER_NAME, userRouteEntity.get().getUser().getName());
 
         service.bookSpots(1, 1, 2);
 
@@ -163,16 +179,16 @@ class RouteServiceImplTest {
         Assertions.assertTrue(userRouteEntity.isPresent());
         Assertions.assertEquals(3, userRouteEntity.get().getSpotCount());
         Assertions.assertEquals(7, userRouteEntity.get().getRoute().getSpots());
-        Assertions.assertEquals("Munich-Berlin", userRouteEntity.get().getRoute().getName());
-        Assertions.assertEquals("John", userRouteEntity.get().getUser().getName());
+        Assertions.assertEquals(ROUTE_NAME, userRouteEntity.get().getRoute().getName());
+        Assertions.assertEquals(USER_NAME, userRouteEntity.get().getUser().getName());
     }
 
     @Test
     @Transactional
     @Rollback
     void testWhenTwoUsersBookSpots() {
-        routeRepository.save(RouteEntity.builder().id(1).name("Munich-Berlin").spots(10).build());
-        userRepository.save(UserEntity.builder().id(1).name("John").build());
+        routeRepository.save(RouteEntity.builder().id(1).name(ROUTE_NAME).spots(SPOTS).build());
+        userRepository.save(UserEntity.builder().id(1).name(USER_NAME).build());
         userRepository.save(UserEntity.builder().id(2).name("Eddi").build());
 
         service.bookSpots(1, 1, 1);
@@ -184,14 +200,14 @@ class RouteServiceImplTest {
 
         Assertions.assertEquals(1, userRouteFirst.getSpotCount());
         Assertions.assertEquals(7, userRouteFirst.getRoute().getSpots());
-        Assertions.assertEquals("Munich-Berlin", userRouteFirst.getRoute().getName());
-        Assertions.assertEquals("John", userRouteFirst.getUser().getName());
+        Assertions.assertEquals(ROUTE_NAME, userRouteFirst.getRoute().getName());
+        Assertions.assertEquals(USER_NAME, userRouteFirst.getUser().getName());
 
         UserRouteEntity userRouteSecond = all.get(1);
 
         Assertions.assertEquals(2, userRouteSecond.getSpotCount());
         Assertions.assertEquals(7, userRouteSecond.getRoute().getSpots());
-        Assertions.assertEquals("Munich-Berlin", userRouteSecond.getRoute().getName());
+        Assertions.assertEquals(ROUTE_NAME, userRouteSecond.getRoute().getName());
         Assertions.assertEquals("Eddi", userRouteSecond.getUser().getName());
     }
 
@@ -199,9 +215,9 @@ class RouteServiceImplTest {
     @Transactional
     @Rollback
     public void testCancelSpots() {
-        RouteEntity routeEntity = RouteEntity.builder().id(1).name("Munich-Berlin").spots(10).build();
+        RouteEntity routeEntity = RouteEntity.builder().id(1).name(ROUTE_NAME).spots(SPOTS).build();
         routeRepository.save(routeEntity);
-        UserEntity userEntity = UserEntity.builder().id(1).name("John").build();
+        UserEntity userEntity = UserEntity.builder().id(1).name(USER_NAME).build();
         userRepository.save(userEntity);
 
         userRouteRepository.save(UserRouteEntity.builder()
@@ -223,16 +239,16 @@ class RouteServiceImplTest {
         NoReservationExists exception = Assertions.assertThrows(NoReservationExists.class, () -> {
             service.cancelReservation(1, 1, 0);
         });
-        Assertions.assertEquals("No reservation exists", exception.getMessage());
+        Assertions.assertEquals(NO_RESERVATION_EXISTS, exception.getMessage());
     }
 
     @Test
     @Transactional
     @Rollback
     public void testFlexibleCancellation() {
-        RouteEntity routeEntity = RouteEntity.builder().id(1).name("Munich-Berlin").spots(10).build();
+        RouteEntity routeEntity = RouteEntity.builder().id(1).name(ROUTE_NAME).spots(SPOTS).build();
         routeRepository.save(routeEntity);
-        UserEntity userEntity = UserEntity.builder().id(1).name("John").build();
+        UserEntity userEntity = UserEntity.builder().id(1).name(USER_NAME).build();
         userRepository.save(userEntity);
 
         userRouteRepository.save(UserRouteEntity.builder()
@@ -256,9 +272,9 @@ class RouteServiceImplTest {
     @Transactional
     @Rollback
     public void testWhenFlexibleCancellationSpotsMoreThenOrdered() {
-        RouteEntity routeEntity = RouteEntity.builder().id(1).name("Munich-Berlin").spots(10).build();
+        RouteEntity routeEntity = RouteEntity.builder().id(1).name(ROUTE_NAME).spots(SPOTS).build();
         routeRepository.save(routeEntity);
-        UserEntity userEntity = UserEntity.builder().id(1).name("John").build();
+        UserEntity userEntity = UserEntity.builder().id(1).name(USER_NAME).build();
         userRepository.save(userEntity);
 
         userRouteRepository.save(UserRouteEntity.builder()
@@ -272,7 +288,7 @@ class RouteServiceImplTest {
             service.cancelReservation(1, 1, 3);
         });
 
-        Assertions.assertEquals("You try to cancel spots more than were reserved", exception.getMessage());
+        Assertions.assertEquals(TRY_TO_CANCEL_MORE_THAN_RESERVED, exception.getMessage());
 
 
         Assertions.assertTrue(userRouteRepository.existsById(UserRouteId.builder().userId(userEntity.getId()).routeId(routeEntity.getId()).build()));
@@ -280,6 +296,6 @@ class RouteServiceImplTest {
         Assertions.assertEquals(2, userRouteEntity.getSpotCount());
 
         RouteEntity updatedRouteEntity = routeRepository.findById(1).get();
-        Assertions.assertEquals(10, updatedRouteEntity.getSpots());
+        Assertions.assertEquals(SPOTS, updatedRouteEntity.getSpots());
     }
 }

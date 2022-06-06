@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static travelling.constant.Constants.WRONG_NUMBER_OF_SPOTS;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -87,7 +88,7 @@ class RouteControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isPreconditionFailed())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof WrongNumberOfSpotsException))
-                .andExpect(result -> assertEquals("Number of spots must be greater than 0", result.getResolvedException().getMessage()));
+                .andExpect(result -> assertEquals(WRONG_NUMBER_OF_SPOTS, result.getResolvedException().getMessage()));
     }
 
 }
