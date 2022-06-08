@@ -2,6 +2,7 @@ package travelling.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import travelling.dto.UserRouteDto;
 import travelling.entity.UserRouteEntity;
 import travelling.mapper.UserRouteEntityToDtoMapper;
@@ -21,6 +22,7 @@ public class AdminServiceImpl implements AdminService {
     protected UserRouteEntityToDtoMapper mapper;
 
     @Override
+    @Transactional(readOnly = true)
     public List<UserRouteDto> getAllInformation() {
         List<UserRouteEntity> result = new ArrayList<>();
         userRouteRepository.findAll().forEach(result::add);

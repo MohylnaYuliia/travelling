@@ -35,7 +35,7 @@ class RouteControllerTest {
     private RouteServiceImpl service;
 
     @Test
-    void getAllBooks() throws Exception {
+    void getAllRouts() throws Exception {
         when(service.getAllRouts()).thenReturn(Arrays.asList(RouteEntity.builder().id(1).name("Munich-Berlin").spots(10).build()));
         mockMvc.perform(MockMvcRequestBuilders
                 .get("/route")
@@ -43,7 +43,7 @@ class RouteControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.*", Matchers.hasSize(1)))
-                .andExpect(jsonPath("$[0].*", Matchers.hasSize(3)))
+                .andExpect(jsonPath("$[0].*", Matchers.hasSize(4)))
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[0].name").value("Munich-Berlin"));
     }

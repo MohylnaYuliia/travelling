@@ -44,6 +44,7 @@ public class RouteServiceImpl implements RouteService {
     private UserRouteRepository userRouteRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public List<RouteEntity> getAllRouts() {
         List<RouteEntity> result = new ArrayList<>();
         routeRepository.findAll().forEach(result::add);
@@ -66,6 +67,11 @@ public class RouteServiceImpl implements RouteService {
         UserRouteEntity userRouteExisted = null;
         if (userRouteEntity.isPresent()) {
             userRouteExisted = userRouteEntity.get();
+            userRouteExisted.setSpotCount(userRouteExisted.getSpotCount() + spotNumber);
+            userRouteRepository.save(userRouteExisted);
+            routeEntity.setSpots(routeEntity.getSpots() - spotNumber);
+            routeRepository.save(routeEntity);
+            return;
         }
 
         routeEntity.setSpots(routeEntity.getSpots() - spotNumber);
@@ -78,6 +84,7 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
+    @Transactional
     public void cancelReservation(Integer userId, Integer routId, Integer spots) {
         UserRouteEntity reservation = userRouteRepository.findById(UserRouteId.builder().routeId(routId).userId(userId).build())
                 .orElseThrow(() -> new NoReservationExists(NO_RESERVATION_EXISTS));

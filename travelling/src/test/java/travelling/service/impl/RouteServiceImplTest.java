@@ -30,8 +30,8 @@ import static travelling.constant.Constants.ALL_SPOTS_SOLD_OUT;
 import static travelling.constant.Constants.NOT_ENOUGH_SPOTS;
 import static travelling.constant.Constants.NO_RESERVATION_EXISTS;
 import static travelling.constant.Constants.ROUTE_NOT_EXISTS;
-import static travelling.constant.Constants.USER_NOT_EXISTS;
 import static travelling.constant.Constants.TRY_TO_CANCEL_MORE_THAN_RESERVED;
+import static travelling.constant.Constants.USER_NOT_EXISTS;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest

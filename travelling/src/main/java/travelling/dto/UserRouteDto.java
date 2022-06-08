@@ -22,4 +22,6 @@ public class UserRouteDto {
     private Integer routeSpotsNumber;
 
     private Integer reservedSpots;
+
+    private long version;
 }
